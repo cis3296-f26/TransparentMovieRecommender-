@@ -37,7 +37,17 @@ class CollaborativeFilter:
         Returns:
             pd.Series: Recommended movies with their predicted ratings.
         """
-        raise NotImplementedError("The recommend method is not implemented yet.")
+        movie_ids = list(user_ratings.keys())
+
+        similarities = self._similarities(movie_ids)
+
+        predictions = self._weighted_sum(similarities, user_ratings)
+
+        predictions = predictions.drop(index=movie_ids, errors="ignore")
+
+        predictions = predictions.sort_values(ascending=False)
+
+        return predictions.head(min(n, 10))
 
     def _similarities(self, movie_ids: list[int]) -> pd.DataFrame:
         """Compute the similarity scores between the given movies and all other movies.
@@ -65,5 +75,20 @@ class CollaborativeFilter:
         Returns:
             pd.Series: Weighted sum of ratings for each movie.
         """
-        raise NotImplementedError("The _weighted_sum method is not implemented yet.")
+        
+        predictions = {}
 
+        for candidate_id in similarities.columns:
+            weighted_total = 0
+            similarity_total = 0
+
+            for movie_id, rating in user_ratings.items():
+                similarity = similarities.loc[movie_id, candidate_id]
+                weighted_total += rating * similarity
+                similarity_total += similarity
+
+            if similarity_total > 0:
+                predicted_rating = weighted_total / similarity_total
+                predictions[candidate_id] = predicted_rating
+
+        return pd.Series(predictions, dtype=float)
