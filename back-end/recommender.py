@@ -66,4 +66,15 @@ class CollaborativeFilter:
             pd.Series: Weighted sum of ratings for each movie.
         """
         raise NotImplementedError("The _weighted_sum method is not implemented yet.")
+    
+    def breakdown(self, user_ratings: dict[int, float], movie_id: int) -> pd.Series:
+        """Compute how much each of the user's ratings contributed to one movie's recommendation.
 
+        Args: 
+            user_ratings (dict[int, float]): User ratings for movies.
+            movie_id (int): Movie ID for which to compute the breakdown.
+        
+        Returns:
+            pd.Series: Contribution of each rated movie to the recommendation of the specified movie.
+        """
+        raise NotImplementedError("The breakdown method is not implemented yet.")
